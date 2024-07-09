@@ -30,15 +30,21 @@ const createPost = async (req, res) => {
 
 const deletePost = async (req, res) => {
   const postId = Number(req.params.id)
+  let userId = Number(req.user.id)
+
+  if(req.user.role === 'ADMIN') {
+    userId = {}
+  }
 
   try {
-    const deletedPost = await deletePostDb(postId)
+
+    const deletedPost = await deletePostDb(postId, userId)
 
     return res.json({ post: deletedPost })
   } catch (e) {
     if (e instanceof PrismaClientKnownRequestError) {
       if (e.code === "P2025") {
-        return res.status(404).json({ error: "A post with the provided ID does not exist" })
+        return res.status(403).json({ error: "User must be owner of the post" })
       }
     }
 
