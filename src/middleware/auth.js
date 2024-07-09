@@ -35,6 +35,17 @@ async function verifyToken (req, res, next) {
     next()
 }
 
+async function verifyUserIsAdmin(req, res, next) {
+    if(req.user.role !== 'ADMIN'){
+        return res.status(403).json({
+            error: 'User must be an admin'
+        })
+    }
+    
+    next()
+}
+
 module.exports = {
-    verifyToken
+    verifyToken,
+    verifyUserIsAdmin
 }
