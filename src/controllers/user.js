@@ -1,5 +1,5 @@
 const { PrismaClientKnownRequestError } = require("@prisma/client")
-const { createUserDb, getAllUsersDb } = require('../domains/user.js')
+const { createUserDb, getAllUsersDb, deleteUserDb } = require('../domains/user.js')
 
 const createUser = async (req, res) => {
   const {
@@ -36,7 +36,32 @@ const getAllUsers = async (req, res) => {
   })
 }
 
+const deleteUser = async (req, res) => {
+  const userId = Number(req.params.id)
+
+  if(req.user.role !== 'ADMIN' && req.user.id !== userId) {
+    return res.status(403).json({
+      error: 'User must be admin to delete another user'
+    })
+  }
+
+  try {
+    const deletedUser = await deleteUserDb(userId)
+
+    return res.json({ user: deletedUser })
+  } catch (e) {
+    if (e instanceof PrismaClientKnownRequestError) {
+      if (e.code === "P2025") {
+        return res.status(404).json({ error: "No user found by this id" })
+      }
+    }
+
+    res.status(500).json({ error: e.message })
+  }
+}
+
 module.exports = {
   createUser,
-  getAllUsers
+  getAllUsers,
+  deleteUser
 }
