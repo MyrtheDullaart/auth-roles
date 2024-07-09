@@ -39,7 +39,7 @@ const getAllUsers = async (req, res) => {
 const deleteUser = async (req, res) => {
   const userId = Number(req.params.id)
 
-  if(req.user.role !== 'ADMIN' && req.user.id !== userId) {
+  if(req.user.role.name !== 'ADMIN' && req.user.id !== userId) {
     return res.status(403).json({
       error: 'User must be admin to delete another user'
     })

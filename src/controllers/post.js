@@ -32,7 +32,7 @@ const deletePost = async (req, res) => {
   const postId = Number(req.params.id)
   let userId = Number(req.user.id)
 
-  if(req.user.role === 'ADMIN') {
+  if(req.user.role.name === 'ADMIN') {
     userId = {}
   }
 

@@ -10,11 +10,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role {
-  USER
-  ADMIN
-}
-
 // https://www.prisma.io/docs/concepts/components/prisma-schema/data-model
 model User {
   id            Int       @id @default(autoincrement())
@@ -22,7 +17,8 @@ model User {
   passwordHash  String
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
-  role          Role      @default(USER)
+  role          Role      @relation(fields: [roleId], references: [id])
+  roleId        Int       @default(1)
   posts         Post[]
 }
 
@@ -34,4 +30,22 @@ model Post {
 
   userId      Int
   user        User      @relation(fields: [userId], references: [id])
+}
+
+model Permission {
+  id          Int       @id @default(autoincrement())
+  role        Role      @relation(fields: [roleId], references: [id])
+  roleId      Int       
+  permission  String    @unique
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt    
+}
+
+model Role {
+  id          Int           @id @default(autoincrement())
+  name        String        @unique
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  users       User[]
+  permissions Permission[]
 }

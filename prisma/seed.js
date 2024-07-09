@@ -27,6 +27,23 @@ async function createUser(username, password) {
       passwordHash: await bcrypt.hash(password, 6),
       posts: {
         create: posts
+      },
+      role: {
+        connectOrCreate: {
+          where: {
+            name: 'USER'
+          },
+          create: {
+            name: 'USER',
+            permissions: {
+              create: [
+                  {permission: 'CREATE_POSTS'},
+                  {permission: 'DELETE_MY_POST'},
+                  {permission: 'DELETE_MY_USER'}
+                ]
+            }
+          }
+        }
       }
     },
     include: {

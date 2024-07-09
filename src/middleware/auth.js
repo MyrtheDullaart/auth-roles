@@ -18,6 +18,9 @@ async function verifyToken (req, res, next) {
         const foundUser = await prisma.user.findUnique({
             where: {
                 id: decodedToken.sub
+            },
+            include: {
+                role: true
             }
         })
 
@@ -36,7 +39,7 @@ async function verifyToken (req, res, next) {
 }
 
 async function verifyUserIsAdmin(req, res, next) {
-    if(req.user.role !== 'ADMIN'){
+    if(req.user.role.name !== 'ADMIN'){
         return res.status(403).json({
             error: 'User must be an admin'
         })
